@@ -1,6 +1,6 @@
 import { useState } from "react";
 
-import { Link } from "react-router";
+import { Link } from "react-router-dom";
 import { useSidebar } from "../context/SidebarContext";
 
 
@@ -27,8 +27,8 @@ const AppHeader: React.FC = () => {
     <header 
       className="sticky top-0 flex w-full z-99999 lg:border-b"
       style={{
-        backgroundColor: '#000000',
-        borderColor: '#374151',
+        backgroundColor: 'rgba(0, 0, 0, 0.8)',
+        borderColor: '#4a5568',
         color: '#ffffff'
       }}
     >
@@ -38,7 +38,7 @@ const AppHeader: React.FC = () => {
             className="items-center justify-center w-10 h-10 rounded-lg z-99999 lg:flex lg:h-11 lg:w-11 lg:border"
             style={{
               color: '#ffffff',
-              borderColor: '#374151'
+              borderColor: '#4a5568'
             }}
             onClick={handleToggle}
             aria-label="Toggle Sidebar"
@@ -96,7 +96,7 @@ const AppHeader: React.FC = () => {
             style={{
               color: '#ffffff'
             }}
-            onMouseEnter={(e) => e.currentTarget.style.backgroundColor = '#374151'}
+            onMouseEnter={(e) => e.currentTarget.style.backgroundColor = '#1f2937'}
             onMouseLeave={(e) => e.currentTarget.style.backgroundColor = 'transparent'}
           >
             <svg

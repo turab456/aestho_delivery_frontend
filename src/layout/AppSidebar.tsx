@@ -1,5 +1,5 @@
 import { useCallback, useEffect, useRef, useState } from "react";
-import { Link, useLocation, useNavigate } from "react-router";
+import { Link, useLocation, useNavigate } from "react-router-dom";
 
 import {
  
@@ -181,7 +181,7 @@ const AppSidebar: React.FC = () => {
                 fontWeight: '500',
                 borderRadius: '0.5rem',
                 fontSize: '0.875rem',
-                backgroundColor: openSubmenu?.type === menuType && openSubmenu?.index === index ? '#374151' : 'transparent',
+                backgroundColor: openSubmenu?.type === menuType && openSubmenu?.index === index ? '#4a5568' : 'transparent',
                 color: openSubmenu?.type === menuType && openSubmenu?.index === index ? '#ffffff' : '#ffffff'
               }}
             >
@@ -220,7 +220,7 @@ const AppSidebar: React.FC = () => {
                   fontWeight: '500',
                   borderRadius: '0.5rem',
                   fontSize: '0.875rem',
-                  backgroundColor: isActive(nav.path) ? '#374151' : 'transparent',
+                  backgroundColor: isActive(nav.path) ? '#4a5568' : 'transparent',
                   color: isActive(nav.path) ? '#ffffff' : '#ffffff',
                   textDecoration: 'none'
                 }}
@@ -265,7 +265,7 @@ const AppSidebar: React.FC = () => {
                         padding: '0.625rem 0.75rem',
                         fontSize: '0.875rem',
                         fontWeight: '500',
-                        backgroundColor: isActive(subItem.path) ? '#374151' : 'transparent',
+                        backgroundColor: isActive(subItem.path) ? '#4a5568' : 'transparent',
                         color: isActive(subItem.path) ? '#ffffff' : '#ffffff',
                         textDecoration: 'none'
                       }}
@@ -335,8 +335,8 @@ const AppSidebar: React.FC = () => {
         ${isMobileOpen ? "translate-x-0" : "-translate-x-full"}
         lg:translate-x-0`}
       style={{
-        backgroundColor: '#000000',
-        borderColor: '#374151',
+        backgroundColor: 'rgba(0, 0, 0, 0.8)',
+        borderColor: '#4a5568',
         color: '#ffffff'
       }}
       onMouseEnter={() => !isExpanded && setIsHovered(true)}
@@ -385,7 +385,7 @@ const AppSidebar: React.FC = () => {
             </div>
           </div>
         </nav>
-        <div className="mt-auto pt-4 border-t border-gray-700">
+        <div className="mt-auto pt-4 border-t" style={{ borderColor: '#4a5568' }}>
           <button
             onClick={handleLogout}
             style={{

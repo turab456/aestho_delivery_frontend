@@ -1,20 +1,28 @@
-import React from 'react';
+import React from "react";
 
 interface CustomButtonProps {
   children: React.ReactNode;
   onClick?: () => void;
-  type?: 'button' | 'submit' | 'reset';
+  type?: "button" | "submit" | "reset";
   disabled?: boolean;
   className?: string;
+  fullWidth?: boolean;
+  style?: React.CSSProperties;
 }
 
 const CustomButton: React.FC<CustomButtonProps> = ({
   children,
   onClick,
-  type = 'button',
+  type = "button",
   disabled = false,
-  className = ''
+  className = "",
+  fullWidth = true,
+  style,
 }) => {
+  const baseColor = "#1f2937";
+  const hoverColor = "#111827";
+  const disabledColor = "#4b5563";
+
   return (
     <button
       type={type}
@@ -22,26 +30,27 @@ const CustomButton: React.FC<CustomButtonProps> = ({
       disabled={disabled}
       className={className}
       style={{
-        width: '100%',
-        padding: '12px 16px',
-        backgroundColor: disabled ? '#9ca3af' : '#000000',
-        color: '#ffffff',
-        border: 'none',
-        borderRadius: '8px',
-        fontSize: '14px',
-        fontWeight: '500',
-        fontFamily: 'Outfit, sans-serif',
-        cursor: disabled ? 'not-allowed' : 'pointer',
-        transition: 'background-color 0.2s ease'
+        width: fullWidth ? "100%" : "auto",
+        padding: "12px 16px",
+        backgroundColor: disabled ? disabledColor : baseColor,
+        color: "#f9fafb",
+        border: "none",
+        borderRadius: "8px",
+        fontSize: "14px",
+        fontWeight: "500",
+        fontFamily: "Outfit, sans-serif",
+        cursor: disabled ? "not-allowed" : "pointer",
+        transition: "background-color 0.2s ease",
+        ...style,
       }}
       onMouseEnter={(e) => {
         if (!disabled) {
-          e.currentTarget.style.backgroundColor = '#374151';
+          e.currentTarget.style.backgroundColor = hoverColor;
         }
       }}
       onMouseLeave={(e) => {
         if (!disabled) {
-          e.currentTarget.style.backgroundColor = '#000000';
+          e.currentTarget.style.backgroundColor = baseColor;
         }
       }}
     >
