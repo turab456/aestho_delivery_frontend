@@ -45,6 +45,8 @@ export type Order = {
   paymentStatus: PaymentStatus;
   subtotal: number;
   shippingFee: number;
+  discountAmount?: number;
+  couponCode?: string | null;
   total: number;
   addressName: string;
   addressPhone?: string | null;

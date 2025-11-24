@@ -180,6 +180,7 @@ const OrderDetailsModal: React.FC<Props> = ({
               <p className="text-sm font-semibold text-gray-900">
                 {order.paymentMethod} • {order.paymentStatus}
               </p>
+              <p className="text-xs text-gray-500">Coupon: {order.couponCode || "—"}</p>
             </div>
             <div className="text-right">
               <p className="text-xs font-semibold uppercase tracking-[0.2em] text-gray-500">
@@ -190,7 +191,8 @@ const OrderDetailsModal: React.FC<Props> = ({
               </p>
               <p className="text-xs text-gray-500">
                 Subtotal {formatter.format(order.subtotal)} • Shipping{" "}
-                {formatter.format(order.shippingFee)}
+                {formatter.format(order.shippingFee)} • Discount{" "}
+                {formatter.format(order.discountAmount || 0)}
               </p>
             </div>
           </div>
