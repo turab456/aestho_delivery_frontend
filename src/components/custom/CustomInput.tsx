@@ -1,4 +1,34 @@
-import React from 'react';
+import React from "react";
+
+interface LabelProps {
+  label: string;
+  required?: boolean;
+  htmlFor?: string;
+  className?: string;
+}
+
+export const CustomInputLabel: React.FC<LabelProps> = ({
+  label,
+  required = false,
+  htmlFor,
+  className = "",
+}) => (
+  <label
+    htmlFor={htmlFor}
+    className={className}
+    style={{
+      display: "block",
+      marginBottom: "8px",
+      fontSize: "14px",
+      fontWeight: "500",
+      color: "#374151",
+      fontFamily: "Outfit, sans-serif",
+    }}
+  >
+    {label}
+    {required && <span style={{ color: "#ef4444" }}> *</span>}
+  </label>
+);
 
 interface CustomInputProps {
   type?: string;
@@ -9,36 +39,30 @@ interface CustomInputProps {
   className?: string;
   label?: string;
   required?: boolean;
+  id?: string;
+  name?: string;
 }
 
 const CustomInput: React.FC<CustomInputProps> = ({
-  type = 'text',
+  type = "text",
   placeholder,
   value,
   onChange,
   disabled = false,
-  className = '',
+  className = "",
   label,
-  required = false
+  required = false,
+  id,
+  name,
 }) => {
   return (
     <div>
       {label && (
-        <label 
-          style={{
-            display: 'block',
-            marginBottom: '8px',
-            fontSize: '14px',
-            fontWeight: '500',
-            color: '#374151',
-            fontFamily: 'Outfit, sans-serif'
-          }}
-        >
-          {label}
-          {required && <span style={{ color: '#ef4444' }}> *</span>}
-        </label>
+        <CustomInputLabel label={label} required={required} htmlFor={id} />
       )}
       <input
+        id={id}
+        name={name}
         type={type}
         placeholder={placeholder}
         value={value}
@@ -46,22 +70,22 @@ const CustomInput: React.FC<CustomInputProps> = ({
         disabled={disabled}
         className={className}
         style={{
-          width: '100%',
-          padding: type === 'password' ? '12px 48px 12px 16px' : '12px 16px',
-          border: '1px solid #d1d5db',
-          borderRadius: '8px',
-          fontSize: '14px',
-          fontFamily: 'Outfit, sans-serif',
-          backgroundColor: disabled ? '#f9fafb' : '#ffffff',
-          color: '#374151',
-          outline: 'none',
-          transition: 'border-color 0.2s ease'
+          width: "100%",
+          padding: type === "password" ? "12px 48px 12px 16px" : "12px 16px",
+          border: "1px solid #d1d5db",
+          borderRadius: "8px",
+          fontSize: "14px",
+          fontFamily: "Outfit, sans-serif",
+          backgroundColor: disabled ? "#f9fafb" : "#ffffff",
+          color: "#374151",
+          outline: "none",
+          transition: "border-color 0.2s ease",
         }}
         onFocus={(e) => {
-          e.currentTarget.style.borderColor = '#000000';
+          e.currentTarget.style.borderColor = "#000000";
         }}
         onBlur={(e) => {
-          e.currentTarget.style.borderColor = '#d1d5db';
+          e.currentTarget.style.borderColor = "#d1d5db";
         }}
       />
     </div>

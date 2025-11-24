@@ -1,6 +1,6 @@
 import { useState } from "react";
 
-import { Link } from "react-router-dom";
+import { Link } from "react-router";
 import { useSidebar } from "../context/SidebarContext";
 
 
@@ -25,10 +25,11 @@ const AppHeader: React.FC = () => {
 
   return (
     <header 
-      className="sticky top-0 flex w-full z-99999 lg:border-b"
+      className="sticky top-0 flex w-full z-99 lg:border-b"
       style={{
-        backgroundColor: 'rgba(0, 0, 0, 0.8)',
-        borderColor: '#4a5568',
+        backgroundColor: 'white',
+       
+        boxShadow: '0 2px 4px rgba(0, 0, 0, 0.1)',
         color: '#ffffff'
       }}
     >
@@ -37,7 +38,7 @@ const AppHeader: React.FC = () => {
           <button
             className="items-center justify-center w-10 h-10 rounded-lg z-99999 lg:flex lg:h-11 lg:w-11 lg:border"
             style={{
-              color: '#ffffff',
+              color: '#4a5568',
               borderColor: '#4a5568'
             }}
             onClick={handleToggle}
@@ -96,7 +97,7 @@ const AppHeader: React.FC = () => {
             style={{
               color: '#ffffff'
             }}
-            onMouseEnter={(e) => e.currentTarget.style.backgroundColor = '#1f2937'}
+            onMouseEnter={(e) => e.currentTarget.style.backgroundColor = '#4a5568'}
             onMouseLeave={(e) => e.currentTarget.style.backgroundColor = 'transparent'}
           >
             <svg

@@ -5,6 +5,7 @@ import {
  
   ChevronDown,
   Grid3X3,
+  ListOrderedIcon,
   LogOut,
  
 } from "lucide-react";
@@ -22,18 +23,14 @@ type NavItem = {
 const navItems: NavItem[] = [
   {
     icon: <Grid3X3 />,
-    name: "Clothing Management",
-    subItems: [{ name: "Category Management", path: "/dashboard", pro: false },
-    { name: "Collections Management", path: "/dashboard/collections", pro: false },
-    { name: "Product Management", path: "/dashboard/products", pro: false },
-    { name: "Variants Management", path: "/dashboard/variants", pro: false },
-    ],
+    name: "Dashboard",
+    path: "/dashboard",
   },
-  // {
-  //   icon: <CalenderIcon />,
-  //   name: "Calendar",
-  //   path: "/calendar",
-  // },
+  {
+    icon: <ListOrderedIcon/>,
+    name: "Orders",
+    path: "/dashboard/order-management",
+  },
   // {
   //   icon: <UserCircleIcon />,
   //   name: "User Profile",
