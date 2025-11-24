@@ -10,6 +10,9 @@ type Props = {
   onClose: () => void;
   onUpdateStatus: (status: OrderStatus) => Promise<void>;
   isUpdating?: boolean;
+  onAccept: () => Promise<void>;
+  isAccepting?: boolean;
+  currentPartnerId?: string;
 };
 
 const STATUS_OPTIONS: { label: string; value: OrderStatus }[] = [
@@ -35,6 +38,9 @@ const OrderDetailsModal: React.FC<Props> = ({
   onClose,
   onUpdateStatus,
   isUpdating = false,
+  onAccept,
+  isAccepting = false,
+  currentPartnerId,
 }) => {
   const [status, setStatus] = useState<OrderStatus>("PLACED");
 
@@ -46,7 +52,17 @@ const OrderDetailsModal: React.FC<Props> = ({
 
   if (!isOpen || !order) return null;
 
+  const isAssignedToMe = Boolean(order.assignedPartnerId && order.assignedPartnerId === currentPartnerId);
+  const isUnassigned = !order.assignedPartnerId;
+  const isLockedByAnother = Boolean(order.assignedPartnerId && !isAssignedToMe);
+  const canUpdateStatus = !isUnassigned && !isLockedByAnother;
+  const partnerLabel =
+    order.assignedPartner?.fullName ||
+    order.assignedPartner?.email ||
+    (order.assignedPartnerId ? "Partner" : "Not accepted");
+
   const handleUpdate = async () => {
+    if (!canUpdateStatus) return;
     await onUpdateStatus(status);
   };
 
@@ -68,6 +84,17 @@ const OrderDetailsModal: React.FC<Props> = ({
             </span>
             <span className="rounded-full bg-blue-50 px-3 py-1 text-xs font-semibold text-blue-700">
               {new Date(order.createdAt || "").toLocaleString()}
+            </span>
+            <span
+              className={`rounded-full px-3 py-1 text-xs font-semibold ${
+                isUnassigned
+                  ? "bg-amber-50 text-amber-700"
+                  : isAssignedToMe
+                    ? "bg-green-50 text-green-700"
+                    : "bg-gray-100 text-gray-700"
+              }`}
+            >
+              {isUnassigned ? "Awaiting acceptance" : `Accepted by ${isAssignedToMe ? "you" : partnerLabel}`}
             </span>
           </div>
         </div>
@@ -104,14 +131,43 @@ const OrderDetailsModal: React.FC<Props> = ({
               value={status}
               onChange={(e) => setStatus(e.target.value as OrderStatus)}
               options={STATUS_OPTIONS}
+              disabled={!canUpdateStatus || isUpdating}
             />
-            <CustomButton
-              fullWidth={false}
-              onClick={handleUpdate}
-              disabled={isUpdating}
-            >
-              {isUpdating ? "Updating..." : "Update Status"}
-            </CustomButton>
+            <div className="flex flex-wrap gap-2">
+              {isUnassigned && (
+                <CustomButton
+                  fullWidth={false}
+                  size="sm"
+                  variant="outline"
+                  onClick={onAccept}
+                  disabled={isAccepting}
+                >
+                  {isAccepting ? "Accepting..." : "Accept order"}
+                </CustomButton>
+              )}
+              <CustomButton
+                fullWidth={false}
+                onClick={handleUpdate}
+                variant="outline"
+                size="sm"
+                disabled={!canUpdateStatus || isUpdating}
+              >
+                {isUpdating ? "Updating..." : "Update Status"}
+              </CustomButton>
+            </div>
+            {isLockedByAnother && (
+              <p className="text-xs text-red-600">
+                Accepted by {partnerLabel}. Status updates are disabled for you.
+              </p>
+            )}
+            {isUnassigned && (
+              <p className="text-xs text-gray-500">
+                Accept this order to start processing and update its status.
+              </p>
+            )}
+            {isAssignedToMe && (
+              <p className="text-xs text-green-700">You accepted this order.</p>
+            )}
           </div>
         </div>
 

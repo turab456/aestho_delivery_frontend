@@ -11,6 +11,13 @@ export type OrderStatus =
 export type PaymentMethod = "COD";
 export type PaymentStatus = "pending" | "paid" | "cancelled";
 
+export type PartnerSummary = {
+  id: string;
+  fullName: string | null;
+  email: string;
+  phoneNumber?: string | null;
+};
+
 export type OrderItem = {
   id: number;
   productId: number;
@@ -32,6 +39,7 @@ export type Order = {
   id: string;
   userId: string;
   assignedPartnerId?: string | null;
+  assignedPartner?: PartnerSummary | null;
   status: OrderStatus;
   paymentMethod: PaymentMethod;
   paymentStatus: PaymentStatus;

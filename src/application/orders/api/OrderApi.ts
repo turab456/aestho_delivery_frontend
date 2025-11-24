@@ -16,6 +16,11 @@ const OrderApi = {
     const response = await apiClient.patch<ApiResponse<Order>>(`/orders/partner/${id}/status`, { status });
     return response.data.data;
   },
+
+  async accept(id: string): Promise<Order> {
+    const response = await apiClient.patch<ApiResponse<Order>>(`/orders/partner/${id}/accept`);
+    return response.data.data;
+  },
 };
 
 export default OrderApi;

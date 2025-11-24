@@ -76,14 +76,14 @@ const CustomModal: React.FC<CustomModalProps> = ({
       <div
         role="dialog"
         aria-modal="true"
-        className={`relative z-10 flex flex-col overflow-hidden bg-white text-gray-900 shadow-2xl dark:bg-gray-900 dark:text-white ${roundingClass} ${widthClasses} ${className}`}
+        className={`relative z-10 flex flex-col overflow-hidden bg-white text-gray-900 shadow-2xl  ${roundingClass} ${widthClasses} ${className}`}
       >
         {showCloseButton && (
           <button
             type="button"
             onClick={onClose}
             aria-label="Close modal"
-            className="absolute right-4 top-4 flex h-10 w-10 items-center justify-center rounded-full bg-gray-100 text-gray-500 transition-colors hover:bg-gray-200 hover:text-gray-700 dark:bg-gray-800 dark:text-gray-400 dark:hover:bg-gray-700 dark:hover:text-white"
+            className="absolute right-4 top-4 flex h-10 w-10 items-center justify-center rounded-full bg-gray-100 text-gray-500 transition-colors hover:bg-gray-200 hover:text-gray-700 "
           >
             <svg
               width="20"
