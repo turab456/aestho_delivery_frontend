@@ -145,7 +145,7 @@ const OrderDetailsModal: React.FC<Props> = ({
             <h4 className="text-base font-semibold text-gray-900">Items</h4>
           </div>
           <div className="divide-y divide-gray-100">
-            {order.items.map((item) => (
+            {order?.items?.map((item) => (
               <div key={item.id} className="flex items-start gap-3 py-3">
                 <div className="size-14 shrink-0 overflow-hidden rounded-lg bg-gray-100">
                   {item.imageUrl ? (
