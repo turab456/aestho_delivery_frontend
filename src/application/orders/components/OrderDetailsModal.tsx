@@ -66,6 +66,116 @@ const OrderDetailsModal: React.FC<Props> = ({
     await onUpdateStatus(status);
   };
 
+  const handlePrintLabel = () => {
+    const label = (order as any).shippingLabel || {
+      orderId: order.id,
+      customer: { name: order.addressName, phone: order.addressPhone },
+      address: {
+        line1: order.addressLine1,
+        line2: order.addressLine2,
+        city: order.city,
+        state: order.state,
+        postalCode: order.postalCode,
+      },
+      items: (order.items || []).map((i) => ({
+        name: i.productName,
+        qty: i.quantity,
+        amount: i.totalPrice,
+        sku: i.sku,
+      })),
+      codAmount: order.total,
+      paymentMethod: order.paymentMethod,
+    };
+
+    const logo =
+      (import.meta as any).env?.VITE_PARTNER_LABEL_LOGO ||
+      (import.meta as any).env?.VITE_LOGO_URL ||
+      "https://aesthco.com/logo.png";
+    const itemsHtml = (label.items || [])
+      .map(
+        (item: any) => `<tr>
+          <td style="padding:6px 4px; border-bottom:1px solid #e5e7eb;">${item.name || ""}</td>
+          <td style="padding:6px 4px; border-bottom:1px solid #e5e7eb; text-align:center;">${item.qty || ""}</td>
+          <td style="padding:6px 4px; border-bottom:1px solid #e5e7eb;">${item.sku || ""}</td>
+          <td style="padding:6px 4px; border-bottom:1px solid #e5e7eb; text-align:right;">₹${Number(item.amount || 0).toFixed(0)}</td>
+        </tr>`,
+      )
+      .join("");
+
+    const html = `
+      <html>
+        <head>
+          <style>
+            * { box-sizing: border-box; font-family: 'Helvetica Neue', Arial, sans-serif; }
+            body { margin: 0; padding: 0; }
+            .label { width: 820px; margin: 0 auto; padding: 24px; }
+            .card { border: 1px dashed #0f172a; padding: 18px; border-radius: 12px; background:#fff; }
+            .header { display:flex; flex-direction:column; align-items:center; gap:8px; margin-bottom:16px; }
+            .brand { text-align:center; color:#0f172a; font-weight:700; letter-spacing:0.08em; }
+          </style>
+        </head>
+        <body onload="window.print(); window.close();">
+          <div class="label">
+            <div class="header">
+              <img src="${logo}" alt="Aesthco" style="height:56px; object-fit:contain;" />
+              <div class="brand">
+                <div style="font-size:14px;">AESTHCO</div>
+                <div style="font-size:12px; font-weight:500;">https://aesthco.com</div>
+              </div>
+              <div style="display:flex; gap:10px; font-size:12px; color:#475569;">
+                <span><strong>Order:</strong> #${label.orderId}</span>
+                <span><strong>Payment:</strong> ${label.paymentMethod}</span>
+                <span><strong>COD:</strong> ₹${Number(label.codAmount || 0).toFixed(0)}</span>
+              </div>
+            </div>
+            <div class="card">
+              <div style="display:flex; gap:16px; margin-bottom:12px;">
+                <div style="flex:1;">
+                  <h3 style="margin:0 0 6px 0; font-size:14px;">Ship To</h3>
+                  <div style="font-size:12px; color:#0f172a;">
+                    <div>${label.customer?.name || ""}</div>
+                    <div>${label.address?.line1 || ""}</div>
+                    ${label.address?.line2 ? `<div>${label.address.line2}</div>` : ""}
+                    <div>${[label.address?.city, label.address?.state, label.address?.postalCode].filter(Boolean).join(", ")}</div>
+                    ${label.customer?.phone ? `<div>Phone: ${label.customer.phone}</div>` : ""}
+                  </div>
+                </div>
+                <div style="flex:1;">
+                  <h3 style="margin:0 0 6px 0; font-size:14px;">From</h3>
+                  <div style="font-size:12px; color:#0f172a;">
+                    <div>Aesthco</div>
+                    <div>https://aesthco.com</div>
+                    <div>support@aesthco.com</div>
+                  </div>
+                </div>
+              </div>
+              <table style="width:100%; border-collapse:collapse; font-size:12px; margin-top:8px;">
+                <thead>
+                  <tr style="background:#f8fafc;">
+                    <th style="text-align:left; padding:6px 4px;">Item</th>
+                    <th style="text-align:center; padding:6px 4px;">Qty</th>
+                    <th style="text-align:left; padding:6px 4px;">SKU</th>
+                    <th style="text-align:right; padding:6px 4px;">Amount</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  ${itemsHtml}
+                </tbody>
+              </table>
+            </div>
+          </div>
+        </body>
+      </html>
+    `;
+
+    const printWindow = window.open("", "_blank", "width=900,height=1100");
+    if (printWindow) {
+      printWindow.document.open();
+      printWindow.document.write(html);
+      printWindow.document.close();
+    }
+  };
+
   return (
     <CustomModal
       isOpen={isOpen}
@@ -153,6 +263,14 @@ const OrderDetailsModal: React.FC<Props> = ({
                 disabled={!canUpdateStatus || isUpdating}
               >
                 {isUpdating ? "Updating..." : "Update Status"}
+              </CustomButton>
+              <CustomButton
+                fullWidth={false}
+                size="sm"
+                variant="outline"
+                onClick={handlePrintLabel}
+              >
+                Shipping label
               </CustomButton>
             </div>
             {isLockedByAnother && (
