@@ -14,7 +14,7 @@ import {
   logoutPartner,
   type LoginPayload,
 } from "../application/Auth/api/authService";
-import { AuthUser } from "../types/auth";
+import { AuthUser } from "../application/Auth/types";
 import { deleteCookie, getCookie, setCookie } from "../lib/cookies";
 
 interface AuthContextValue {
