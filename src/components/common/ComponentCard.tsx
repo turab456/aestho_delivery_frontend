@@ -1,4 +1,4 @@
-import Button from "../ui/button/Button";
+import { CustomButton } from "../custom";
 
 interface ComponentCardProps {
   title: string;
@@ -34,9 +34,9 @@ const ComponentCard: React.FC<ComponentCardProps> = ({
           </p>
         )}
         {btn && (
-          <Button size="sm" variant="primary" onClick={btnclick}>
+          <CustomButton size="sm"  onClick={btnclick}>
             {btntext}
-          </Button>
+          </CustomButton>
         )}
       </div>
 
