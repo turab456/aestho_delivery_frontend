@@ -90,7 +90,7 @@ const OrderDetailsModal: React.FC<Props> = ({
     const logo =
       (import.meta as any).env?.VITE_PARTNER_LABEL_LOGO ||
       (import.meta as any).env?.VITE_LOGO_URL ||
-      "https://aesthco.com/logo.png";
+      "https://aesthco.com/black_logo.png";
     const itemsHtml = (label.items || [])
       .map(
         (item: any) => `<tr>
@@ -103,59 +103,182 @@ const OrderDetailsModal: React.FC<Props> = ({
       .join("");
 
     const html = `
+      <!DOCTYPE html>
       <html>
-        <head>
-          <style>
-            * { box-sizing: border-box; font-family: 'Helvetica Neue', Arial, sans-serif; }
-            body { margin: 0; padding: 0; }
-            .label { width: 820px; margin: 0 auto; padding: 24px; }
-            .card { border: 1px dashed #0f172a; padding: 18px; border-radius: 12px; background:#fff; }
-            .header { display:flex; flex-direction:column; align-items:center; gap:8px; margin-bottom:16px; }
-            .brand { text-align:center; color:#0f172a; font-weight:700; letter-spacing:0.08em; }
-          </style>
-        </head>
-        <body onload="window.print(); window.close();">
-          <div class="label">
+      <head>
+        <title>Shipping Label #${label.orderId}</title>
+        <style>
+          @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700;800&display=swap');
+          
+          * { box-sizing: border-box; }
+          body { 
+            margin: 0; 
+            padding: 20px; 
+            font-family: 'Inter', sans-serif; 
+            background: #f5f5f5; 
+            -webkit-print-color-adjust: exact; 
+          }
+          
+          .page {
+            max-width: 600px; /* Standard label width */
+            margin: 0 auto;
+            background: white;
+          }
+
+          .label-border {
+            border: 4px solid #000;
+            padding: 24px;
+            position: relative;
+          }
+
+          /* Header & Logo - Centered */
+          .header {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            border-bottom: 3px solid #000;
+            padding-bottom: 20px;
+            margin-bottom: 20px;
+          }
+          
+          .logo-img {
+            height: 50px;
+            object-fit: contain;
+            display: block;
+            margin-bottom: 10px;
+          }
+
+          .label-title {
+            font-size: 14px;
+            font-weight: 800;
+            letter-spacing: 2px;
+            text-transform: uppercase;
+          }
+
+          /* Meta Info Bar */
+          .meta-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            border: 2px solid #000;
+            margin-bottom: 24px;
+          }
+          .meta-cell {
+            padding: 10px;
+            font-size: 12px;
+            font-weight: 700;
+            text-transform: uppercase;
+          }
+          .meta-cell:first-child { border-right: 2px solid #000; }
+          
+          /* Addresses */
+          .address-section {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 24px;
+            margin-bottom: 24px;
+          }
+          .address-box h3 {
+            margin: 0 0 8px 0;
+            font-size: 11px;
+            text-transform: uppercase;
+            color: #555;
+            letter-spacing: 1px;
+            border-bottom: 1px solid #ccc;
+            padding-bottom: 4px;
+          }
+          .address-text {
+            font-size: 14px;
+            line-height: 1.5;
+            color: #000;
+          }
+          .recipient-name {
+            font-weight: 800;
+            font-size: 16px;
+          }
+          .huge-code {
+            font-size: 18px;
+            font-weight: 700;
+            margin-top: 8px;
+          }
+
+          /* Items Table */
+          table { width: 100%; border-collapse: collapse; font-size: 12px; }
+          th { text-align: left; border-bottom: 2px solid #000; padding: 6px; text-transform: uppercase; font-size: 11px; }
+          td { padding: 8px 6px; border-bottom: 1px solid #eee; }
+          .item-name { font-weight: 600; }
+          .item-qty { text-align: center; font-weight: 700; }
+          
+          /* Footer */
+          .footer {
+            margin-top: 24px;
+            border-top: 3px solid #000;
+            padding-top: 16px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+          }
+          .cod-box {
+            border: 2px solid #000;
+            padding: 8px 16px;
+            font-size: 20px;
+            font-weight: 800;
+          }
+          .cod-label { font-size: 10px; text-transform: uppercase; display: block; }
+
+          @media print {
+            body { padding: 0; background: white; }
+            .page { max-width: 100%; }
+            .label-border { border: 2px solid #000; }
+          }
+        </style>
+      </head>
+      <body onload="window.print();">
+        <div class="page">
+          <div class="label-border">
+            
             <div class="header">
-              <img src="${logo}" alt="Aesthco" style="height:56px; object-fit:contain;" />
-              <div class="brand">
-                <div style="font-size:14px;">AESTHCO</div>
-                <div style="font-size:12px; font-weight:500;">https://aesthco.com</div>
+              <img src="${logo}" alt="Aesthco" class="logo-img" />
+              <div class="label-title">Shipping Document</div>
+            </div>
+
+            <div class="meta-grid">
+              <div class="meta-cell">Order #${label.orderId}</div>
+              <div class="meta-cell">Date: ${new Date().toLocaleDateString()}</div>
+            </div>
+
+            <div class="address-section">
+              <div class="address-box">
+                <h3>Ship To</h3>
+                <div class="address-text">
+                  <div class="recipient-name">${label.customer?.name}</div>
+                  <div>${label.address?.line1}</div>
+                  ${label.address?.line2 ? `<div>${label.address.line2}</div>` : ""}
+                  <div>${[label.address?.city, label.address?.state].filter(Boolean).join(", ")}</div>
+                  <div class="huge-code">${label.address?.postalCode}</div>
+                  <div style="margin-top:8px;">Tel: <strong>${label.customer?.phone}</strong></div>
+                </div>
               </div>
-              <div style="display:flex; gap:10px; font-size:12px; color:#475569;">
-                <span><strong>Order:</strong> #${label.orderId}</span>
-                <span><strong>Payment:</strong> ${label.paymentMethod}</span>
-                <span><strong>COD:</strong> ₹${Number(label.codAmount || 0).toFixed(0)}</span>
+
+              <div class="address-box">
+                <h3>Shipped From</h3>
+                <div class="address-text">
+                  <div style="font-weight:700;">Aesthco Warehouse</div>
+                  <div>Returns Processing Center</div>
+                  <div>Bengaluru, Karnataka</div>
+                  <div>India</div>
+                </div>
               </div>
             </div>
-            <div class="card">
-              <div style="display:flex; gap:16px; margin-bottom:12px;">
-                <div style="flex:1;">
-                  <h3 style="margin:0 0 6px 0; font-size:14px;">Ship To</h3>
-                  <div style="font-size:12px; color:#0f172a;">
-                    <div>${label.customer?.name || ""}</div>
-                    <div>${label.address?.line1 || ""}</div>
-                    ${label.address?.line2 ? `<div>${label.address.line2}</div>` : ""}
-                    <div>${[label.address?.city, label.address?.state, label.address?.postalCode].filter(Boolean).join(", ")}</div>
-                    ${label.customer?.phone ? `<div>Phone: ${label.customer.phone}</div>` : ""}
-                  </div>
-                </div>
-                <div style="flex:1;">
-                  <h3 style="margin:0 0 6px 0; font-size:14px;">From</h3>
-                  <div style="font-size:12px; color:#0f172a;">
-                    <div>Aesthco</div>
-                    <div>https://aesthco.com</div>
-                    <div>support@aesthco.com</div>
-                  </div>
-                </div>
-              </div>
-              <table style="width:100%; border-collapse:collapse; font-size:12px; margin-top:8px;">
+
+            <div style="margin-bottom: 20px;">
+              <h3>Items</h3>
+              <table>
                 <thead>
-                  <tr style="background:#f8fafc;">
-                    <th style="text-align:left; padding:6px 4px;">Item</th>
-                    <th style="text-align:center; padding:6px 4px;">Qty</th>
-                    <th style="text-align:left; padding:6px 4px;">SKU</th>
-                    <th style="text-align:right; padding:6px 4px;">Amount</th>
+                  <tr>
+                    <th>Product</th>
+                    <th style="width: 40px; text-align: center;">Qty</th>
+                    <th style="width: 100px;">SKU</th>
                   </tr>
                 </thead>
                 <tbody>
@@ -163,11 +286,22 @@ const OrderDetailsModal: React.FC<Props> = ({
                 </tbody>
               </table>
             </div>
+
+            <div class="footer">
+              <div style="font-size: 12px; font-weight: 600;">
+                Payment: ${label.paymentMethod}
+              </div>
+              <div class="cod-box">
+                <span class="cod-label">Collect Amount</span>
+                ₹${Number(label.codAmount || 0).toFixed(0)}
+              </div>
+            </div>
+
           </div>
-        </body>
+        </div>
+      </body>
       </html>
     `;
-
     const printWindow = window.open("", "_blank", "width=900,height=1100");
     if (printWindow) {
       printWindow.document.open();
