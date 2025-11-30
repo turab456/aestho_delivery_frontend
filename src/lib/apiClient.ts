@@ -1,4 +1,5 @@
 import axios from "axios";
+import { toast } from "react-toastify";
 import { getCookie, deleteCookie } from "./cookies";
 import { API_BASE_URL } from "../constant";
  
@@ -24,8 +25,18 @@ apiClient.interceptors.request.use((config) => {
 });
 
 apiClient.interceptors.response.use(
-  (response) => response,
+  (response) => {
+    const message = response?.data?.message;
+    if (message) {
+      toast.success(message);
+    }
+    return response;
+  },
   (error) => {
+    const message =
+      error?.response?.data?.message || error?.message || "Something went wrong";
+    toast.error(message);
+
     if (error.response?.status === 401) {
       deleteCookie("partner_auth_token");
       deleteCookie("partner_refresh_token");
