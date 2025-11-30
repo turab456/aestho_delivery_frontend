@@ -52,7 +52,9 @@ const OrderDetailsModal: React.FC<Props> = ({
 
   if (!isOpen || !order) return null;
 
-  const isAssignedToMe = Boolean(order.assignedPartnerId && order.assignedPartnerId === currentPartnerId);
+  const isAssignedToMe = Boolean(
+    order.assignedPartnerId && order.assignedPartnerId === currentPartnerId
+  );
   const isUnassigned = !order.assignedPartnerId;
   const isLockedByAnother = Boolean(order.assignedPartnerId && !isAssignedToMe);
   const canUpdateStatus = !isUnassigned && !isLockedByAnother;
@@ -84,21 +86,52 @@ const OrderDetailsModal: React.FC<Props> = ({
         sku: i.sku,
       })),
       codAmount: order.total,
+      shippingFee: order.shippingFee || 0,
+      subtotal: order.subtotal || 0,
+      discountAmount: order.discountAmount || 0,
       paymentMethod: order.paymentMethod,
     };
 
-    const logo =
-      (import.meta as any).env?.VITE_PARTNER_LABEL_LOGO ||
-      (import.meta as any).env?.VITE_LOGO_URL ||
-      "https://aesthco.com/black_logo.png";
+    const env = (import.meta as any).env || {};
+    const origin = typeof window !== 'undefined' && window.location ? window.location.origin : '';
+    const remoteFallback = 'https://aesthco.com/black_logo.png';
+
+    // Candidate local paths (common names). Order matters.
+    const candidateLocalPaths = [
+      env?.VITE_LOCAL_LOGO_PATH,
+      '/logo.png',
+      '/logo.svg',
+      '/black_logo.png',
+    ].filter(Boolean);
+
+    const candidateLocalUrls = origin ? candidateLocalPaths.map((p) => `${origin}${p}`) : [];
+
+    const candidates = [
+      env?.VITE_PARTNER_LABEL_LOGO,
+      env?.VITE_LOGO_URL,
+      ...candidateLocalUrls,
+      remoteFallback,
+    ].filter(Boolean);
+
+    // pick first candidate as initial logo, and keep the rest as alternates
+    const logo = candidates[0];
+    const altLogos = candidates.slice(1);
     const itemsHtml = (label.items || [])
       .map(
         (item: any) => `<tr>
-          <td style="padding:6px 4px; border-bottom:1px solid #e5e7eb;">${item.name || ""}</td>
-          <td style="padding:6px 4px; border-bottom:1px solid #e5e7eb; text-align:center;">${item.qty || ""}</td>
-          <td style="padding:6px 4px; border-bottom:1px solid #e5e7eb;">${item.sku || ""}</td>
-          <td style="padding:6px 4px; border-bottom:1px solid #e5e7eb; text-align:right;">₹${Number(item.amount || 0).toFixed(0)}</td>
-        </tr>`,
+          <td style="padding:6px 4px; border-bottom:1px solid #e5e7eb; width:180px; max-width:180px; white-space:nowrap; overflow:hidden; text-overflow:ellipsis;">${
+            item.name || ""
+          }</td>
+          <td style="padding:6px 4px; border-bottom:1px solid #e5e7eb; text-align:center; width:40px;">${
+            item.qty || ""
+          }</td>
+          <td style="padding:6px 4px; border-bottom:1px solid #e5e7eb; width:220px; max-width:220px; word-break:break-all;">${
+            item.sku || ""
+          }</td>
+          <td style="padding:6px 4px; border-bottom:1px solid #e5e7eb; text-align:right; width:100px;">₹${Number(
+            item.amount || 0
+          ).toFixed(0)}</td>
+        </tr>`
       )
       .join("");
 
@@ -238,7 +271,7 @@ const OrderDetailsModal: React.FC<Props> = ({
           <div class="label-border">
             
             <div class="header">
-              <img src="${logo}" alt="Aesthco" class="logo-img" />
+              <img src="${logo}" alt="Aesthco" class="logo-img" data-alts="${altLogos.join(',')}" onerror="(function(){try{const a=this.getAttribute('data-alts')||''; if(!a){this.onerror=null;return;} const arr=a.split(','); const next=arr.shift(); if(next){ this.setAttribute('data-alts', arr.join(',')); this.src=next; } else { this.onerror=null; } }catch(e){ this.onerror=null; } }).call(this)" />
               <div class="label-title">Shipping Document</div>
             </div>
 
@@ -252,10 +285,10 @@ const OrderDetailsModal: React.FC<Props> = ({
                 <h3>Ship To</h3>
                 <div class="address-text">
                   <div class="recipient-name">${label.customer?.name}</div>
-                  <div>${label.address?.line1}</div>
-                  ${label.address?.line2 ? `<div>${label.address.line2}</div>` : ""}
-                  <div>${[label.address?.city, label.address?.state].filter(Boolean).join(", ")}</div>
-                  <div class="huge-code">${label.address?.postalCode}</div>
+                  <div>${label.address?.line1}${label.address?.line2 ? `, ${label.address.line2}` : ""}</div>
+                  <div>${[label.address?.city, label.address?.state, label.address?.postalCode]
+                    .filter(Boolean)
+                    .join(", ")}</div>
                   <div style="margin-top:8px;">Tel: <strong>${label.customer?.phone}</strong></div>
                 </div>
               </div>
@@ -263,10 +296,11 @@ const OrderDetailsModal: React.FC<Props> = ({
               <div class="address-box">
                 <h3>Shipped From</h3>
                 <div class="address-text">
-                  <div style="font-weight:700;">Aesthco Warehouse</div>
-                  <div>Returns Processing Center</div>
+                  <div style="font-weight:700;">Aesthco</div>
+                  <div>RT Nagar</div>
                   <div>Bengaluru, Karnataka</div>
                   <div>India</div>
+                  <div><a href="mailto:support@aesthco.com">support@aesthco.com</a></div>
                 </div>
               </div>
             </div>
@@ -276,29 +310,68 @@ const OrderDetailsModal: React.FC<Props> = ({
               <table>
                 <thead>
                   <tr>
-                    <th>Product</th>
-                    <th style="width: 40px; text-align: center;">Qty</th>
-                    <th style="width: 100px;">SKU</th>
-                  </tr>
+                      <th style="width:180px;">Product</th>
+                      <th style="width: 40px; text-align: center;">Qty</th>
+                      <th style="width:220px;">SKU</th>
+                      <th style="width:100px; text-align: right;">Price</th>
+                    </tr>
                 </thead>
                 <tbody>
                   ${itemsHtml}
                 </tbody>
               </table>
+
+              <div style="margin-top:12px; display:flex; justify-content:flex-end;">
+                <table style="width:320px; border-collapse:collapse; font-size:13px;">
+                  <tbody>
+                    <tr>
+                      <td style="padding:6px 8px; color:#444;">Subtotal</td>
+                      <td style="padding:6px 8px; text-align:right; font-weight:600;">₹${Number(
+                        label.subtotal || 0
+                      ).toFixed(0)}</td>
+                    </tr>
+                    <tr>
+                      <td style="padding:6px 8px; color:#444;">Shipping</td>
+                      <td style="padding:6px 8px; text-align:right;">₹${Number(
+                        label.shippingFee || 0
+                      ).toFixed(0)}</td>
+                    </tr>
+                    <tr>
+                      <td style="padding:6px 8px; color:#444;">Discount</td>
+                      <td style="padding:6px 8px; text-align:right;">-₹${Number(
+                        label.discountAmount || 0
+                      ).toFixed(0)}</td>
+                    </tr>
+                    <tr>
+                      <td style="padding:6px 8px; font-weight:800; border-top:1px solid #ddd;">Total</td>
+                      <td style="padding:6px 8px; text-align:right; font-weight:800; border-top:1px solid #ddd;">₹${Number(
+                        label.total || label.codAmount || 0
+                      ).toFixed(0)}</td>
+                    </tr>
+                  </tbody>
+                </table>
+              </div>
             </div>
 
             <div class="footer">
               <div style="font-size: 12px; font-weight: 600;">
                 Payment: ${label.paymentMethod}
+                
+                
               </div>
-              <div class="cod-box">
-                <span class="cod-label">Collect Amount</span>
-                ₹${Number(label.codAmount || 0).toFixed(0)}
+              <div style="display:flex; flex-direction:column; align-items:flex-end; gap:6px;">
+              
+                <div class="cod-box">
+                  <span class="cod-label">Collect Amount</span>
+                  ₹${Number(label.codAmount || 0).toFixed(0)}
+                </div>
               </div>
             </div>
 
           </div>
         </div>
+
+       
       </body>
       </html>
     `;
@@ -334,11 +407,13 @@ const OrderDetailsModal: React.FC<Props> = ({
                 isUnassigned
                   ? "bg-amber-50 text-amber-700"
                   : isAssignedToMe
-                    ? "bg-green-50 text-green-700"
-                    : "bg-gray-100 text-gray-700"
+                  ? "bg-green-50 text-green-700"
+                  : "bg-gray-100 text-gray-700"
               }`}
             >
-              {isUnassigned ? "Awaiting acceptance" : `Accepted by ${isAssignedToMe ? "you" : partnerLabel}`}
+              {isUnassigned
+                ? "Awaiting acceptance"
+                : `Accepted by ${isAssignedToMe ? "you" : partnerLabel}`}
             </span>
           </div>
         </div>
@@ -378,7 +453,7 @@ const OrderDetailsModal: React.FC<Props> = ({
               disabled={!canUpdateStatus || isUpdating}
             />
             <div className="flex flex-wrap gap-2">
-              {isUnassigned && (
+              {isUnassigned && order.status !== "CANCELLED" && (
                 <CustomButton
                   fullWidth={false}
                   size="sm"
@@ -432,7 +507,9 @@ const OrderDetailsModal: React.FC<Props> = ({
               <p className="text-sm font-semibold text-gray-900">
                 {order.paymentMethod} • {order.paymentStatus}
               </p>
-              <p className="text-xs text-gray-500">Coupon: {order.couponCode || "—"}</p>
+              <p className="text-xs text-gray-500">
+                Coupon: {order.couponCode || "—"}
+              </p>
             </div>
             <div className="text-right">
               <p className="text-xs font-semibold uppercase tracking-[0.2em] text-gray-500">

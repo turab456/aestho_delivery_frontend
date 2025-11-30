@@ -212,7 +212,7 @@ const OrderList: React.FC = () => {
             >
               <Eye size={18} />
             </button>
-            {!row.assignedPartnerId && (
+            {!row.assignedPartnerId && row.status !== 'CANCELLED' && (
               <button
                 type="button"
                 onClick={() => setAcceptTarget(row)}
