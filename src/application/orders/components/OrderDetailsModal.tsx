@@ -94,14 +94,14 @@ const OrderDetailsModal: React.FC<Props> = ({
 
     const env = (import.meta as any).env || {};
     const origin = typeof window !== 'undefined' && window.location ? window.location.origin : '';
-    const remoteFallback = 'https://aesthco.com/black_logo.png';
+    const remoteFallback = 'https://aesthco.com/navbar.png';
 
     // Candidate local paths (common names). Order matters.
     const candidateLocalPaths = [
       env?.VITE_LOCAL_LOGO_PATH,
       '/logo.png',
       '/logo.svg',
-      '/black_logo.png',
+      '/navbar.png',
     ].filter(Boolean);
 
     const candidateLocalUrls = origin ? candidateLocalPaths.map((p) => `${origin}${p}`) : [];
